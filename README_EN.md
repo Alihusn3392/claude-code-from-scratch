@@ -6,6 +6,8 @@
 
 **Recreate Claude Code's core capabilities in ~1300 lines of TypeScript.** This isn't a demo — it's a step-by-step tutorial where each chapter compares Claude Code's real source with our simplified implementation, helping you truly understand how coding agents work.
 
+<https://github.com/Windy3f3f3f3f/claude-code-from-scratch/raw/main/demo.mp4>
+
 ## Step-by-Step Tutorial
 
 **[Read Online →](https://windy3f3f3f3f.github.io/claude-code-from-scratch/)**
@@ -29,18 +31,48 @@
 git clone https://github.com/Windy3f3f3f3f/claude-code-from-scratch.git
 cd claude-code-from-scratch
 npm install && npm run build
-export ANTHROPIC_API_KEY="your-key-here"
-
-npm start                                    # Interactive REPL
-npm start -- "fix the bug in src/app.ts"     # One-shot mode
-npm start -- --yolo "run tests and fix"      # Skip confirmations
-npm start -- --resume                        # Restore last session
 ```
 
-### OpenAI-Compatible API
+### API Configuration
+
+Two backends supported, auto-detected via environment variables:
+
+**Option 1: Anthropic Format (Recommended)**
 
 ```bash
-npm start -- --api-base https://aihubmix.com/v1 --api-key sk-xxx --model gpt-4o "hello"
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+# Optional: use a proxy
+export ANTHROPIC_BASE_URL="https://aihubmix.com"
+```
+
+**Option 2: OpenAI-Compatible Format**
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+```
+
+Default model is `claude-opus-4-6`. Customize via env var or CLI flag:
+
+```bash
+export MINI_CLAUDE_MODEL="claude-sonnet-4-6"    # env var
+npm start -- --model gpt-4o                      # CLI flag (higher priority)
+```
+
+### Run
+
+```bash
+npm start                    # Interactive REPL mode (recommended)
+npm start -- --resume        # Resume last session
+npm start -- --yolo          # Skip safety confirmations
+```
+
+Install globally to use from any directory:
+
+```bash
+npm link                     # Global install
+cd ~/your-project
+mini-claude                  # Launch directly
 ```
 
 ### REPL Commands

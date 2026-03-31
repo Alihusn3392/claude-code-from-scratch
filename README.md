@@ -6,6 +6,8 @@
 
 **用 ~1300 行 TypeScript 复现 Claude Code 的核心能力。** 这不是 demo，而是一份分步教程——每一步都对照 Claude Code 真实源码讲解"它怎么做的 → 我们怎么简化的"，帮你彻底理解 coding agent 的工作原理。
 
+<https://github.com/Windy3f3f3f3f/claude-code-from-scratch/raw/main/demo.mp4>
+
 ## 分步教程
 
 **[在线阅读 →](https://windy3f3f3f3f.github.io/claude-code-from-scratch/)**
@@ -29,18 +31,48 @@
 git clone https://github.com/Windy3f3f3f3f/claude-code-from-scratch.git
 cd claude-code-from-scratch
 npm install && npm run build
-export ANTHROPIC_API_KEY="your-key-here"
-
-npm start                              # 交互式 REPL 模式
-npm start -- "修复 src/app.ts 的 bug"    # 单次执行模式
-npm start -- --yolo "跑所有测试并修复"    # 跳过安全确认
-npm start -- --resume                    # 恢复上次会话
 ```
 
-### 使用 OpenAI 兼容 API
+### 配置 API
+
+支持两种后端，通过环境变量自动识别：
+
+**方式一：Anthropic 格式（推荐）**
 
 ```bash
-npm start -- --api-base https://aihubmix.com/v1 --api-key sk-xxx --model gpt-4o "hello"
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+# 可选：使用代理
+export ANTHROPIC_BASE_URL="https://aihubmix.com"
+```
+
+**方式二：OpenAI 兼容格式**
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+```
+
+默认模型为 `claude-opus-4-6`，可通过环境变量或命令行参数自定义：
+
+```bash
+export MINI_CLAUDE_MODEL="claude-sonnet-4-6"    # 环境变量方式
+npm start -- --model gpt-4o                      # 命令行方式（优先级更高）
+```
+
+### 运行
+
+```bash
+npm start                    # 交互式 REPL 模式（推荐）
+npm start -- --resume        # 恢复上次会话继续对话
+npm start -- --yolo          # 跳过安全确认（危险命令自动执行）
+```
+
+全局安装后可在任意目录使用：
+
+```bash
+npm link                     # 全局安装
+cd ~/your-project
+mini-claude                  # 直接启动
 ```
 
 ### REPL 命令

@@ -49,8 +49,10 @@ async function withRetry<T>(
 // ─── Model context windows ──────────────────────────────────
 
 const MODEL_CONTEXT: Record<string, number> = {
+  "claude-opus-4-6": 200000,
+  "claude-sonnet-4-6": 200000,
   "claude-sonnet-4-20250514": 200000,
-  "claude-haiku-4-20250414": 200000,
+  "claude-haiku-4-5-20251001": 200000,
   "claude-opus-4-20250514": 200000,
   "gpt-4o": 128000,
   "gpt-4o-mini": 128000,
@@ -78,7 +80,8 @@ function toOpenAITools(): OpenAI.ChatCompletionTool[] {
 interface AgentOptions {
   yolo?: boolean;
   model?: string;
-  apiBase?: string;
+  apiBase?: string;          // OpenAI-compatible base URL
+  anthropicBaseURL?: string; // Anthropic base URL (e.g. proxy)
   apiKey?: string;
   thinking?: boolean;
 }
@@ -111,7 +114,7 @@ export class Agent {
   constructor(options: AgentOptions = {}) {
     this.yolo = options.yolo || false;
     this.thinking = options.thinking || false;
-    this.model = options.model || "claude-sonnet-4-20250514";
+    this.model = options.model || "claude-opus-4-6";
     this.useOpenAI = !!options.apiBase;
     this.systemPrompt = buildSystemPrompt();
     this.effectiveWindow = getContextWindow(this.model) - 20000;
@@ -125,7 +128,10 @@ export class Agent {
       });
       this.openaiMessages.push({ role: "system", content: this.systemPrompt });
     } else {
-      this.anthropicClient = new Anthropic({ apiKey: options.apiKey });
+      this.anthropicClient = new Anthropic({
+        apiKey: options.apiKey,
+        ...(options.anthropicBaseURL ? { baseURL: options.anthropicBaseURL } : {}),
+      });
     }
   }
 

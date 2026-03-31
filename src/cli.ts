@@ -19,7 +19,7 @@ function parseArgs(): ParsedArgs {
   const args = process.argv.slice(2);
   let yolo = false;
   let thinking = false;
-  let model = "claude-sonnet-4-20250514";
+  let model = process.env.MINI_CLAUDE_MODEL || "claude-opus-4-6";
   let apiBase: string | undefined;
   let apiKey: string | undefined;
   let resume = false;
@@ -45,7 +45,7 @@ Usage: mini-claude [options] [prompt]
 Options:
   --yolo, -y       Skip all confirmation prompts
   --thinking        Enable extended thinking (Anthropic only)
-  --model, -m      Model to use (default: claude-sonnet-4-20250514)
+  --model, -m      Model to use (default: claude-opus-4-6, or MINI_CLAUDE_MODEL env)
   --api-base URL   Use OpenAI-compatible API endpoint
   --api-key KEY    API key for the specified endpoint
   --resume         Resume the last session
@@ -164,21 +164,45 @@ async function runRepl(agent: Agent) {
 async function main() {
   const { yolo, model, apiBase, apiKey, prompt, resume, thinking } = parseArgs();
 
-  // Determine API key: --api-key flag > env vars
-  const resolvedApiKey =
-    apiKey ||
-    (apiBase ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY);
+  // Resolve API config: CLI flags > env vars
+  // Priority: --api-base/--api-key flags first, then env vars
+  let resolvedApiBase = apiBase;
+  let resolvedApiKey = apiKey;
+  let resolvedUseOpenAI = !!apiBase;
 
   if (!resolvedApiKey) {
-    const envVar = apiBase ? "OPENAI_API_KEY" : "ANTHROPIC_API_KEY";
+    // Check OPENAI env vars first (if OPENAI_BASE_URL is set, use OpenAI format)
+    if (process.env.OPENAI_API_KEY && process.env.OPENAI_BASE_URL) {
+      resolvedApiKey = process.env.OPENAI_API_KEY;
+      resolvedApiBase = resolvedApiBase || process.env.OPENAI_BASE_URL;
+      resolvedUseOpenAI = true;
+    } else if (process.env.ANTHROPIC_API_KEY) {
+      resolvedApiKey = process.env.ANTHROPIC_API_KEY;
+      resolvedApiBase = resolvedApiBase || process.env.ANTHROPIC_BASE_URL;
+      resolvedUseOpenAI = false;
+    } else if (process.env.OPENAI_API_KEY) {
+      resolvedApiKey = process.env.OPENAI_API_KEY;
+      resolvedApiBase = resolvedApiBase || process.env.OPENAI_BASE_URL;
+      resolvedUseOpenAI = true;
+    }
+  }
+
+  if (!resolvedApiKey) {
     printError(
       `API key is required.\n` +
-        `  Use --api-key flag or set ${envVar} environment variable.`
+        `  Set ANTHROPIC_API_KEY (+ optional ANTHROPIC_BASE_URL) for Anthropic format,\n` +
+        `  or OPENAI_API_KEY + OPENAI_BASE_URL for OpenAI-compatible format,\n` +
+        `  or use --api-key / --api-base flags.`
     );
     process.exit(1);
   }
 
-  const agent = new Agent({ yolo, model, apiBase, apiKey: resolvedApiKey, thinking });
+  const agent = new Agent({
+    yolo, model, thinking,
+    apiBase: resolvedUseOpenAI ? resolvedApiBase : undefined,
+    anthropicBaseURL: !resolvedUseOpenAI ? resolvedApiBase : undefined,
+    apiKey: resolvedApiKey,
+  });
 
   // Resume session if requested
   if (resume) {
